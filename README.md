@@ -18,11 +18,13 @@ This project demonstrates my skills in **modular architecture, API integration, 
 - Planned **infinite scroll** implementation:  
   - Initial display: 5 products  
   - Load more: 5 products per scroll, up to 50 items  
+- ⚠️ **Note:** To fetch data correctly, you need to run the included **Mockoon response file**. Without it, no data will appear in the app.  
 
 ### 📊 Trending Page
 - Fetches and displays dynamic data from **local Mockoon API** using **Combine**.  
 - Users can **favorite products**, saved using **CoreData**.  
 - Reactive updates ensure UI stays in sync with data.  
+- ⚠️ **Note:** Requires the **Mockoon response file** to be running locally for data to appear.  
 
 ### 🎥 Live Video Page
 - Streams popular videos via **Pexels API** with a TikTok-style interface.  
@@ -52,9 +54,19 @@ This project demonstrates my skills in **modular architecture, API integration, 
 
 ---
 
+## 🗂 Mockoon API
+- The project uses a **local Mockoon API** for HomePage and TrendingPage.  
+- To run the API:  
+  1. Open Mockoon app.  
+  2. Import the provided `Mockoon/MazaApp_Products.json` file.  
+  3. Start the local server.  
+- Without running this local API, no data will appear in the app.  
+
+---
+
 ## 🔒 API Keys
 
-The files **Config.plist** and **Device.swift** are not included in the repository due to sensitive information.  
+The file **Config.plist** is not included in the repository due to sensitive information.  
 To run the project:  
 
 1. Create a **Config.plist** file in the **Resources/** folder.  
