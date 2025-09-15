@@ -57,10 +57,10 @@ This project demonstrates my skills in **modular architecture, API integration, 
 ## 🗂 Mockoon API
 - The project uses a **local Mockoon API** for HomePage and TrendingPage.  
 - To run the API:  
-  1. Open Mockoon app.  
-  2. Import the provided `Mockoon/MazaApp_Products.json` file.  
-  3. Start the local server.  
-- Without running this local API, no data will appear in the app.  
+  1. Open **Mockoon** app.  
+  2. Import the provided file: `Mockoon/MazaApp_Products.json`.  
+  3. Start the local server on **localhost:3002**.  
+- Without running this local API, **no data will appear** in the app. 
 
 ---
 
