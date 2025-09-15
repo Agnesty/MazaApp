@@ -39,5 +39,5 @@ fastlane/readme.md
 iOSInjectionProject/
 
 # API Keys / Secrets
-Config.plist
-Device.swift
+MazaApp/Resources/Config.plist
+MazaApp/Domain/Entities/Model/Device.swift
