@@ -130,18 +130,6 @@ final class HomeViewModel {
         print("🔎 [Initial] Category \(categoryId) → ambil \(slice.count) produk pertama")
     }
     
-//    func loadMoreProducts(for categoryId: Int, pageSize: Int = 4) {
-//        guard let all = products.value[categoryId] else { return }
-//        let currentOffset = productOffsets[categoryId] ?? 0
-//        guard currentOffset < all.count else { return } // habis
-//
-//        let nextOffset = min(currentOffset + pageSize, all.count)
-//        let slice = Array(all.prefix(nextOffset))
-//        visibleProducts.accept(visibleProducts.value.merging([categoryId: slice]) { _, new in new })
-//        productOffsets[categoryId] = nextOffset
-//        print("isi produk load more: ",slice.count)
-//    }
-    
     func loadMoreProducts(for categoryId: Int, pageSize: Int = 4) {
         guard let all = products.value[categoryId] else { return }
         let currentOffset = productOffsets[categoryId] ?? 0
