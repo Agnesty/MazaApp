@@ -36,12 +36,36 @@ class TabBarViewCtr: UITabBarController {
         nav4.navigationBar.tintColor = .label
         nav5.navigationBar.tintColor = .label
         
-        nav1.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 1)
-        nav2.tabBarItem = UITabBarItem(title: "Trending", image: UIImage(systemName: "flame"), tag: 2)
-        nav3.tabBarItem = UITabBarItem(title: "Live", image: UIImage(systemName: "play.square.stack"), tag: 3)
-        nav4.tabBarItem = UITabBarItem(title: "Pokemon", image: UIImage(systemName: "bell"), tag: 4)
-        nav5.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), tag: 5)
-        
+        nav1.tabBarItem = UITabBarItem(
+            title: "Home",
+            image: UIImage(named: "homeIconBottomBar")?.withRenderingMode(.alwaysOriginal),
+            selectedImage: UIImage(named: "homeIconBottomBar")?.withRenderingMode(.alwaysOriginal)
+        )
+
+        nav2.tabBarItem = UITabBarItem(
+            title: "Trending",
+            image: UIImage(named: "trendingIconBottomBar")?.withRenderingMode(.alwaysOriginal),
+            selectedImage: UIImage(named: "trendingIconBottomBar")?.withRenderingMode(.alwaysOriginal)
+        )
+
+        nav3.tabBarItem = UITabBarItem(
+            title: "Live",
+            image: UIImage(named: "liveIconBottomBar")?.withRenderingMode(.alwaysOriginal),
+            selectedImage: UIImage(named: "liveIconBottomBar")?.withRenderingMode(.alwaysOriginal)
+        )
+
+        nav4.tabBarItem = UITabBarItem(
+            title: "Pokemon",
+            image: UIImage(named: "pokemonIconBottomBar")?.withRenderingMode(.alwaysOriginal),
+            selectedImage: UIImage(named: "pokemonIconBottomBar")?.withRenderingMode(.alwaysOriginal)
+        )
+
+        nav5.tabBarItem = UITabBarItem(
+            title: "Profile",
+            image: UIImage(named: "profilIconBottomBar")?.withRenderingMode(.alwaysOriginal),
+            selectedImage: UIImage(named: "profilIconBottomBar")?.withRenderingMode(.alwaysOriginal)
+        )
+
         nav1.navigationBar.prefersLargeTitles = true
         nav2.navigationBar.prefersLargeTitles = true
         nav3.navigationBar.prefersLargeTitles = true
