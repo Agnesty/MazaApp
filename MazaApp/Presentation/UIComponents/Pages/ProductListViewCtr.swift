@@ -57,6 +57,7 @@ final class ProductListViewCtr: BaseViewController {
         layout.minimumLineSpacing = 2
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .systemBackground
+        collectionView.isScrollEnabled = false
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(ListProductCollectionViewCell.self,
