@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import MBProgressHUD
 
 extension UIView {
     func roundCorners(corners: UIRectCorner, radius: CGFloat, borderColor: CGColor) {
@@ -82,6 +83,14 @@ extension UIView {
         layer.shadowOpacity = shadowOpacity
         layer.shadowRadius = shadowRadius
         layer.cornerRadius = cornerRadius
+    }
+    
+    func showLoadingHUD() {
+        MBProgressHUD.showAdded(to: self, animated: true)
+    }
+
+    func hideLoadingHUD() {
+        MBProgressHUD.hide(for: self, animated: true)
     }
 }
 

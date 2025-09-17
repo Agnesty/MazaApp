@@ -13,6 +13,7 @@ import RxCocoa
 final class ProductListViewCtr: BaseViewController {
 
     var didSelectProduct: ((Product) -> Void)?
+    var onHeightChange: ((CGFloat) -> Void)?
 
     private var categoryId: Int = 0
     private var products: [Product] = []
@@ -67,7 +68,7 @@ final class ProductListViewCtr: BaseViewController {
     }
 
     private func bindProducts() {
-        viewModel.products
+        viewModel.visibleProducts
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] dict in
                 guard let self = self else { return }
@@ -75,6 +76,10 @@ final class ProductListViewCtr: BaseViewController {
                 self.heightCache.removeAll()
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.reloadData()
+                print("🟡 ProductListViewCtr categoryId \(self.categoryId) → products \(self.products.count)")
+                    
+                let totalHeight = self.collectionView.collectionViewLayout.collectionViewContentSize.height
+                self.onHeightChange?(totalHeight)
             })
             .disposed(by: disposeBag)
     }
@@ -91,6 +96,17 @@ final class ProductListViewCtr: BaseViewController {
             verticalFittingPriority: .fittingSizeLevel
         )
         return size.height
+    }
+    
+    func didBecomeVisible() {
+        guard isViewLoaded else { return }
+        collectionView.reloadData()
+        collectionView.setNeedsLayout()
+        collectionView.layoutIfNeeded()
+        
+        // Hitung ulang tinggi lalu panggil onHeightChange
+        let height = collectionView.collectionViewLayout.collectionViewContentSize.height
+        onHeightChange?(height)
     }
 }
 

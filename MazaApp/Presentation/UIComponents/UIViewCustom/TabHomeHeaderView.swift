@@ -15,7 +15,7 @@ class TabMenuHeaderView: UIView {
 
     private var tabLabels: [UILabel] = []
     private var underlineView = UIView()
-    private var selectedIndex: Int = 0
+    private(set) var selectedIndex: Int = 0
 
     private let stackView: UIStackView = {
         let sv = UIStackView()
@@ -80,6 +80,7 @@ class TabMenuHeaderView: UIView {
         guard let index = gesture.view?.tag else { return }
         setSelectedTab(index, animated: true)
         didSelectTab?(index)
+        print("🟢 User klik tab index \(index)")
     }
 
     func setSelectedTab(_ index: Int, animated: Bool = true) {

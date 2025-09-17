@@ -13,13 +13,14 @@ class PageContainerTableViewCell: BaseTableViewCell {
     private var pageViewController: UIPageViewController?
     private var viewControllers: [UIViewController] = []
     private var currentIndex = 0
+    private var contentHeightCellProduct: CGFloat = UITableView.automaticDimension
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
     override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-        return CGSize(width: targetSize.width, height: UIScreen.main.bounds.height)
+        return CGSize(width: targetSize.width, height: contentHeightCellProduct)
     }
     
     required init?(coder: NSCoder) {
@@ -36,6 +37,17 @@ class PageContainerTableViewCell: BaseTableViewCell {
                 let detailVC = ProductDetailViewCtr()
                 detailVC.product = product
                 parent?.navigationController?.pushViewController(detailVC, animated: true)
+            }
+            vc.onHeightChange = { [weak self] height in
+                guard let self = self else { return }
+                self.contentHeightCellProduct = height
+                self.invalidateIntrinsicContentSize()
+
+                if let tableView = sequence(first: self.superview, next: { $0?.superview })
+                    .first(where: { $0 is UITableView }) as? UITableView {
+                    tableView.beginUpdates()
+                    tableView.endUpdates()
+                }
             }
             return vc
         }
@@ -66,8 +78,14 @@ class PageContainerTableViewCell: BaseTableViewCell {
     func setPage(index: Int) {
         guard index >= 0, index < viewControllers.count else { return }
         let direction: UIPageViewController.NavigationDirection = index > currentIndex ? .forward : .reverse
+        if let targetVC = viewControllers[index] as? ProductListViewCtr {
+            targetVC.loadViewIfNeeded()
+            targetVC.didBecomeVisible() // 🔥 trigger height calculation
+        }
         pageViewController?.setViewControllers([viewControllers[index]], direction: direction, animated: true)
         currentIndex = index
+        print("🔵 setPage ke index \(index)")
+
     }
 }
 
@@ -82,11 +100,22 @@ extension PageContainerTableViewCell: UIPageViewControllerDataSource, UIPageView
         return viewControllers[index + 1]
     }
     
-    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+    func pageViewController(_ pageViewController: UIPageViewController,
+                            didFinishAnimating finished: Bool,
+                            previousViewControllers: [UIViewController],
+                            transitionCompleted completed: Bool) {
         if completed, let currentVC = pageViewController.viewControllers?.first,
            let index = viewControllers.firstIndex(of: currentVC) {
             NotificationCenter.default.post(name: .pageDidChange, object: index)
             currentIndex = index
+
+            // 🔥 Trigger re-layout untuk VC yang baru aktif
+            if let vc = currentVC as? ProductListViewCtr {
+                vc.loadViewIfNeeded()
+                vc.didBecomeVisible()
+            }
+            print("🟣 UIPageViewController pindah ke index \(index)")
+
         }
     }
 }

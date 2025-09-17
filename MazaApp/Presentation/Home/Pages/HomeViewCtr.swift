@@ -16,7 +16,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         case bannerSwitch = 0
         case detailUserCard
         case sellingService
-        case recommendationForYou
+        case recommendationProduct
     }
     
     private let viewModel = HomeViewModel.shared
@@ -218,7 +218,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         viewModel.allCallHomeAPI()
         
         viewModel.homeData
-            .compactMap { $0 } // biar skip nil
+            .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] homeData in
                 self?.tableView.reloadData()
@@ -226,14 +226,6 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
                 self?.tabHomeStickyHeader.didSelectTab = { [weak self] index in
                     self?.updateProducts(forTabIndex: index)
                 }
-                self?.refreshControl.endRefreshing()
-            })
-            .disposed(by: disposeBag)
-        
-        viewModel.products
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.tableView.reloadData()
                 self?.refreshControl.endRefreshing()
             })
             .disposed(by: disposeBag)
@@ -261,20 +253,13 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
     }
     
     private func updateProducts(forTabIndex index: Int) {
-        guard let tabs = viewModel.homeData.value?.tabsHomeMenu,
-              tabs.indices.contains(index) else { return }
-
-        let tab = tabs[index]
-        let products = viewModel.products(for: tab.id)
-        print("✅ Products for \(tab.tabName) : \(products.count)")
-
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: SectionHome.recommendationForYou.rawValue)) as? PageContainerTableViewCell {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)) as? PageContainerTableViewCell {
             cell.setPage(index: index)
         }
-
         tabHomeStickyHeader.setSelectedTab(index)
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
-
     
     @objc private func iconAppTapped() {
         let alert = UIAlertController(title: "Info", message: "Gambar diklik!", preferredStyle: .alert)
@@ -328,7 +313,7 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
             return 1
         case .sellingService:
             return 1
-        case .recommendationForYou:
+        case .recommendationProduct:
             return 1
         default:
             return 0
@@ -336,9 +321,9 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == SectionHome.recommendationForYou.rawValue {
-            return UIScreen.main.bounds.height - 200 // atau tinggi tertentu
-        }
+        //        if indexPath.section == SectionHome.recommendationProduct.rawValue {
+        //            return UIScreen.main.bounds.height - 200 // atau tinggi tertentu
+        //        }
         return UITableView.automaticDimension
     }
     
@@ -351,11 +336,11 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
                 cell.banners = banners
             }
             
-//            if viewModel?.showEntryMenuSkeleton == true {
-//                guard let cell = tableView.dequeueReusableCell(withIdentifier: SkeletonUtilityTableViewCell.identifier(), for: indexPath) as? SkeletonUtilityTableViewCell else { return UITableViewCell() }
-//                cell.showUtilitySkeleton(section: .userSettings, serviceType: viewModel?.userBonusesBoarding?.brandServiceType)
-//                return cell
-//            }
+            //            if viewModel?.showEntryMenuSkeleton == true {
+            //                guard let cell = tableView.dequeueReusableCell(withIdentifier: SkeletonUtilityTableViewCell.identifier(), for: indexPath) as? SkeletonUtilityTableViewCell else { return UITableViewCell() }
+            //                cell.showUtilitySkeleton(section: .userSettings, serviceType: viewModel?.userBonusesBoarding?.brandServiceType)
+            //                return cell
+            //            }
             return cell
         case .detailUserCard:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: DetailUserCardTableViewCell.identifier, for: indexPath) as? DetailUserCardTableViewCell else { return UITableViewCell() }
@@ -369,12 +354,12 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
                 cell.sellingServices = sellingServices
             }
             return cell
-        case .recommendationForYou:
+        case .recommendationProduct:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: PageContainerTableViewCell.identifier, for: indexPath) as? PageContainerTableViewCell else { return UITableViewCell() }
-              if let tabs = viewModel.homeData.value?.tabsHomeMenu {
-                  cell.configure(with: tabs, parent: self)
-              }
-              return cell
+            if let tabs = viewModel.homeData.value?.tabsHomeMenu {
+                cell.configure(with: tabs, parent: self)
+            }
+            return cell
         default:
             let cell = UITableViewCell()
             cell.backgroundColor = .cyan
@@ -383,13 +368,27 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return section == SectionHome.recommendationForYou.rawValue ? 45 : .leastNonzeroMagnitude
+        return section == SectionHome.recommendationProduct.rawValue ? 45 : .leastNonzeroMagnitude
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == SectionHome.recommendationForYou.rawValue {
+        if section == SectionHome.recommendationProduct.rawValue {
             return tabHomeStickyHeader
         }
         return nil
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let frameHeight = scrollView.frame.size.height
+        
+        if offsetY > contentHeight - frameHeight - 200 {
+            if let tabs = viewModel.homeData.value?.tabsHomeMenu {
+                let currentTabId = tabs[tabHomeStickyHeader.selectedIndex].id
+                viewModel.loadMoreProducts(for: currentTabId, pageSize: 4)
+                print("📌 ScrollView did scroll with currentTabId:", currentTabId, " (selectedIndex =", tabHomeStickyHeader.selectedIndex, ")")
+            }
+        }
     }
 }

@@ -129,7 +129,7 @@ class SignUpViewCtr: BaseViewController {
         registerBtn.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
-                MBProgressHUD.showAdded(to: self.view, animated: true)
+                self.showLoadingHUD()
                 
                 let username = self.usernameTF.text ?? ""
                 let fullname = self.fullNameTF.text ?? ""
@@ -147,14 +147,14 @@ class SignUpViewCtr: BaseViewController {
                     .observe(on: MainScheduler.instance)
                     .subscribe(
                         onCompleted: {
-                            MBProgressHUD.hide(for: self.view, animated: true)
+                            self.hideLoadingHUD()
                             self.showAlert(title: "Registrasi Berhasil", message: "Silahkan login dahulu.") {
                                 self.dismiss(animated: true)
                             }
                             print("Registrasi berhasil")
                         },
                         onError: { error in
-                            MBProgressHUD.hide(for: self.view, animated: true)
+                            self.hideLoadingHUD()
                             self.showAlert(title: "Gagal Registrasi", message: "Mohon masukkan data kembali.")
                             print("Registrasi gagal: \(error.localizedDescription)")
                         }

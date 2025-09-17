@@ -104,7 +104,7 @@ class SignInViewCtr: BaseViewController {
         loginBtn.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
-                MBProgressHUD.showAdded(to: self.view, animated: true)
+                self.showLoadingHUD()
                 
                 let email = self.emailTF.text ?? ""
                 let password = self.passwordTF.text ?? ""
@@ -114,11 +114,11 @@ class SignInViewCtr: BaseViewController {
                     .observe(on: MainScheduler.instance)
                     .subscribe(
                         onError: { error in
-                            MBProgressHUD.hide(for: self.view, animated: true)
+                            self.hideLoadingHUD()
                             print("Login gagal: \(error.localizedDescription)")
                             self.showAlert(title: "Gagal Login", message: "Username atau password salah")
                         }, onCompleted: {
-                            MBProgressHUD.hide(for: self.view, animated: true)
+                            self.hideLoadingHUD()
                             print("Login berhasil")
                             self.presentMain()
                         }
