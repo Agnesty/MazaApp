@@ -10,7 +10,6 @@ import SnapKit
 
 class SettingsViewCtr: BaseViewController {
     
-    private let auth: AuthRepositoryProtocol = AuthRepositoryService()
     private let topBarView = TopBarView()
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     
@@ -54,11 +53,10 @@ class SettingsViewCtr: BaseViewController {
     }
     
     private func logout() {
-        auth.logout()
-        let signInVC = SignInViewCtr()
-        let nav = UINavigationController(rootViewController: signInVC)
-        nav.modalPresentationStyle = .fullScreen
-        present(nav, animated: true, completion: nil)
+        if let sceneDelegate = UIApplication.shared.connectedScenes
+            .first?.delegate as? SceneDelegate {
+            sceneDelegate.coordinator?.logout()
+        }
     }
 }
 

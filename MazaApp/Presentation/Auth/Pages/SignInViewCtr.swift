@@ -6,19 +6,19 @@
 //
 
 import UIKit
-import RealmSwift
 import RxSwift
+import RxCocoa
 import MBProgressHUD
 
-class SignInViewCtr: BaseViewController {
-    private let auth: AuthRepositoryProtocol = AuthRepositoryService()
+final class SignInViewCtr: BaseViewController {
+    private let viewModel: AuthViewModel
     private let disposeBag = DisposeBag()
     
+    // MARK: - UI
     private let titleImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "Maza")
         imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
     
@@ -71,16 +71,31 @@ class SignInViewCtr: BaseViewController {
         return btn
     }()
     
+    // MARK: - Init
+    init(viewModel: AuthViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
         setupUI()
-        bindActions()
+        bindViewModel()
     }
     
+    // MARK: - Setup
     private func setupUI() {
-        let stack = UIStackView(arrangedSubviews: [titleImageView, subtitleLabel, emailTF, passwordTF, loginBtn, registerBtn])
+        let stack = UIStackView(arrangedSubviews: [
+            titleImageView,
+            subtitleLabel,
+            emailTF,
+            passwordTF,
+            loginBtn,
+            registerBtn
+        ])
         stack.axis = .vertical
         stack.spacing = 16
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -100,39 +115,47 @@ class SignInViewCtr: BaseViewController {
         }
     }
     
-    private func bindActions() {
+    private func bindViewModel() {
+        // Action
         loginBtn.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
-                self.showLoadingHUD()
-                
-                let email = self.emailTF.text ?? ""
-                let password = self.passwordTF.text ?? ""
-                
-                self.auth.login(email: email, password: password)
-                    .asObservable()
-                    .observe(on: MainScheduler.instance)
-                    .subscribe(
-                        onError: { error in
-                            self.hideLoadingHUD()
-                            print("Login gagal: \(error.localizedDescription)")
-                            self.showAlert(title: "Gagal Login", message: "Username atau password salah")
-                        }, onCompleted: {
-                            self.hideLoadingHUD()
-                            print("Login berhasil")
-                            self.presentMain()
-                        }
-                    )
-                    .disposed(by: self.disposeBag)
+                self.viewModel.login(
+                    email: self.emailTF.text ?? "",
+                    password: self.passwordTF.text ?? ""
+                )
             })
             .disposed(by: disposeBag)
         
         registerBtn.rx.tap
             .subscribe(onNext: { [weak self] in
-                self?.present(UINavigationController(rootViewController: SignUpViewCtr()), animated: true)
-            }).disposed(by: disposeBag)
+                guard let self = self else { return }
+                let signUp = SignUpViewCtr(viewModel: self.viewModel) // reuse viewModel
+                self.present(UINavigationController(rootViewController: signUp), animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        // Output
+        viewModel.isLoading
+            .bind(onNext: { [weak self] loading in
+                loading ? self?.showLoadingHUD() : self?.hideLoadingHUD()
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.loginSuccess
+            .bind(onNext: { [weak self] in
+                self?.presentMain()
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.errorMessage
+            .bind(onNext: { [weak self] msg in
+                self?.showAlert(title: "Error", message: msg)
+            })
+            .disposed(by: disposeBag)
     }
     
+    // MARK: - Actions
     private func presentMain() {
         let tabBarVC = TabBarViewCtr()
         tabBarVC.selectedIndex = 0
@@ -142,7 +165,6 @@ class SignInViewCtr: BaseViewController {
     
     @objc private func togglePasswordVisibility() {
         passwordTF.isSecureTextEntry.toggle()
-        
         if let eyeButton = passwordTF.rightView as? UIButton {
             let imageName = passwordTF.isSecureTextEntry ? "eye.fill" : "eye.slash.fill"
             eyeButton.setImage(UIImage(systemName: imageName), for: .normal)

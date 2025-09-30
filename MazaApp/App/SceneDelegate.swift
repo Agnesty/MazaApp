@@ -10,22 +10,21 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var coordinator: AppCoordinator?
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        let window = UIWindow(windowScene: windowScene)
-        
-        if AuthRepositoryService.shared.currentUser() != nil {
-            window.rootViewController = TabBarViewCtr()
-        } else {
-            let navVC = UINavigationController(rootViewController: SignInViewCtr())
-            navVC.navigationBar.prefersLargeTitles = true
-            navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
-            window.rootViewController = navVC
-        }
-        window.makeKeyAndVisible()
-        self.window = window
-    }
+    func scene(_ scene: UIScene,
+                  willConnectTo session: UISceneSession,
+                  options connectionOptions: UIScene.ConnectionOptions) {
+           guard let windowScene = (scene as? UIWindowScene) else { return }
+           
+           let window = UIWindow(windowScene: windowScene)
+           let coordinator = AppCoordinator(window: window)
+           
+           self.window = window
+           self.coordinator = coordinator
+           
+           coordinator.start()
+       }
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.

@@ -48,13 +48,17 @@
 		33D9C3252E5CB3B5006B18A6 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C3242E5CB3B5006B18A6 /* APIClient.swift */; };
 		33D9C3272E5CB3D5006B18A6 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C3262E5CB3D5006B18A6 /* APIEndpoint.swift */; };
 		33D9C3292E5CB3FC006B18A6 /* HomeRepositoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C3282E5CB3FC006B18A6 /* HomeRepositoryService.swift */; };
-		33D9C3332E5CB561006B18A6 /* MazaAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C3322E5CB561006B18A6 /* MazaAppTests.swift */; };
 		33D9C3402E5CB5D3006B18A6 /* MazaAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C33F2E5CB5D3006B18A6 /* MazaAppUITests.swift */; };
 		33D9C3422E5CB5D3006B18A6 /* MazaAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C3412E5CB5D3006B18A6 /* MazaAppUITestsLaunchTests.swift */; };
 		33D9C3492E5CB64B006B18A6 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C3482E5CB64B006B18A6 /* APIError.swift */; };
 		33D9C34B2E5CB87F006B18A6 /* SQLiteHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C34A2E5CB87F006B18A6 /* SQLiteHelper.swift */; };
 		33D9C3512E5CB904006B18A6 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C3502E5CB904006B18A6 /* LocationService.swift */; };
 		33D9C3532E5CB913006B18A6 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D9C3522E5CB913006B18A6 /* NotificationService.swift */; };
+		33DAE0BB2E8B94000005E045 /* AuthUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33DAE0BA2E8B94000005E045 /* AuthUseCase.swift */; };
+		33DAE0BD2E8B95740005E045 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33DAE0BC2E8B95740005E045 /* AuthViewModel.swift */; };
+		33DAE0BF2E8B96F30005E045 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33DAE0BE2E8B96F30005E045 /* AppCoordinator.swift */; };
+		33DAE0C22E8B9F4E0005E045 /* MockAuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33DAE0C12E8B9F4E0005E045 /* MockAuthRepository.swift */; };
+		33DAE0C42E8B9F880005E045 /* AuthViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33DAE0C32E8B9F880005E045 /* AuthViewModelTests.swift */; };
 		3602101C2E38F2A800D9C23D /* ProductDetailViewCtr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3602101B2E38F2A800D9C23D /* ProductDetailViewCtr.swift */; };
 		360210202E38F9BA00D9C23D /* ImageHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3602101F2E38F9BA00D9C23D /* ImageHeaderTableViewCell.swift */; };
 		360210222E38F9F800D9C23D /* PriceInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 360210212E38F9F800D9C23D /* PriceInfoTableViewCell.swift */; };
@@ -95,6 +99,8 @@
 		36F60B142E253F9A000E2DC6 /* VideoCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36F60B132E253F99000E2DC6 /* VideoCacheManager.swift */; };
 		36F60B162E253FD6000E2DC6 /* StringExtens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36F60B152E253FD6000E2DC6 /* StringExtens.swift */; };
 		36FA0D5B2D59C8CF009A3BEC /* HomeSearchViewCtr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36FA0D5A2D59C8CF009A3BEC /* HomeSearchViewCtr.swift */; };
+		6835DA30FF752B4704DF3C91 /* Pods_MazaAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F7DEAF6F1FE7D4CCF9B04EB /* Pods_MazaAppUITests.framework */; };
+		A1AF413F451E2E5BDE830586 /* Pods_MazaAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47B87DD68BA8309454A5A642 /* Pods_MazaAppTests.framework */; };
 		DE15A0277C38A6043183EB40 /* Pods_MazaApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B60F4C15A80E88D7CCCC367 /* Pods_MazaApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -158,7 +164,6 @@
 		33D9C3262E5CB3D5006B18A6 /* APIEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoint.swift; sourceTree = "<group>"; };
 		33D9C3282E5CB3FC006B18A6 /* HomeRepositoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeRepositoryService.swift; sourceTree = "<group>"; };
 		33D9C3302E5CB561006B18A6 /* MazaAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MazaAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		33D9C3322E5CB561006B18A6 /* MazaAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MazaAppTests.swift; sourceTree = "<group>"; };
 		33D9C33D2E5CB5D3006B18A6 /* MazaAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MazaAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		33D9C33F2E5CB5D3006B18A6 /* MazaAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MazaAppUITests.swift; sourceTree = "<group>"; };
 		33D9C3412E5CB5D3006B18A6 /* MazaAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MazaAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -166,6 +171,11 @@
 		33D9C34A2E5CB87F006B18A6 /* SQLiteHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQLiteHelper.swift; sourceTree = "<group>"; };
 		33D9C3502E5CB904006B18A6 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		33D9C3522E5CB913006B18A6 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		33DAE0BA2E8B94000005E045 /* AuthUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthUseCase.swift; sourceTree = "<group>"; };
+		33DAE0BC2E8B95740005E045 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		33DAE0BE2E8B96F30005E045 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		33DAE0C12E8B9F4E0005E045 /* MockAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthRepository.swift; sourceTree = "<group>"; };
+		33DAE0C32E8B9F880005E045 /* AuthViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModelTests.swift; sourceTree = "<group>"; };
 		3602101B2E38F2A800D9C23D /* ProductDetailViewCtr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailViewCtr.swift; sourceTree = "<group>"; };
 		3602101F2E38F9BA00D9C23D /* ImageHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageHeaderTableViewCell.swift; sourceTree = "<group>"; };
 		360210212E38F9F800D9C23D /* PriceInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -208,8 +218,14 @@
 		36F60B132E253F99000E2DC6 /* VideoCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCacheManager.swift; sourceTree = "<group>"; };
 		36F60B152E253FD6000E2DC6 /* StringExtens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtens.swift; sourceTree = "<group>"; };
 		36FA0D5A2D59C8CF009A3BEC /* HomeSearchViewCtr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSearchViewCtr.swift; sourceTree = "<group>"; };
+		47B87DD68BA8309454A5A642 /* Pods_MazaAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MazaAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		48611C7268ABEDA328F390DC /* Pods-MazaAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MazaAppTests.release.xcconfig"; path = "Target Support Files/Pods-MazaAppTests/Pods-MazaAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		53A47EE1DFA492F4FAB4977F /* Pods-MazaApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MazaApp.release.xcconfig"; path = "Target Support Files/Pods-MazaApp/Pods-MazaApp.release.xcconfig"; sourceTree = "<group>"; };
+		5B07CF3FDF227EF3360CD4C6 /* Pods-MazaAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MazaAppTests.debug.xcconfig"; path = "Target Support Files/Pods-MazaAppTests/Pods-MazaAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5B60F4C15A80E88D7CCCC367 /* Pods_MazaApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MazaApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		96575C25934D25758E7BF8A9 /* Pods-MazaAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MazaAppUITests.debug.xcconfig"; path = "Target Support Files/Pods-MazaAppUITests/Pods-MazaAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		9F7DEAF6F1FE7D4CCF9B04EB /* Pods_MazaAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MazaAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A0A604234D90308D2484D959 /* Pods-MazaAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MazaAppUITests.release.xcconfig"; path = "Target Support Files/Pods-MazaAppUITests/Pods-MazaAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		D336EEE9FD4AE07CBC300791 /* Pods-MazaApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MazaApp.debug.xcconfig"; path = "Target Support Files/Pods-MazaApp/Pods-MazaApp.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -218,6 +234,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1AF413F451E2E5BDE830586 /* Pods_MazaAppTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -225,6 +242,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6835DA30FF752B4704DF3C91 /* Pods_MazaAppUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,6 +352,7 @@
 		331D94AE2E69275B00829B96 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				33DAE0BC2E8B95740005E045 /* AuthViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -500,6 +519,7 @@
 		331D94C82E69311500829B96 /* UseCases */ = {
 			isa = PBXGroup;
 			children = (
+				33DAE0BA2E8B94000005E045 /* AuthUseCase.swift */,
 			);
 			path = UseCases;
 			sourceTree = "<group>";
@@ -585,7 +605,8 @@
 		33D9C3312E5CB561006B18A6 /* MazaAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				33D9C3322E5CB561006B18A6 /* MazaAppTests.swift */,
+				33DAE0C02E8B9F280005E045 /* Mocks */,
+				33DAE0C32E8B9F880005E045 /* AuthViewModelTests.swift */,
 			);
 			path = MazaAppTests;
 			sourceTree = "<group>";
@@ -597,6 +618,14 @@
 				33D9C3412E5CB5D3006B18A6 /* MazaAppUITestsLaunchTests.swift */,
 			);
 			path = MazaAppUITests;
+			sourceTree = "<group>";
+		};
+		33DAE0C02E8B9F280005E045 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				33DAE0C12E8B9F4E0005E045 /* MockAuthRepository.swift */,
+			);
+			path = Mocks;
 			sourceTree = "<group>";
 		};
 		3602101D2E38F79300D9C23D /* Home */ = {
@@ -719,6 +748,7 @@
 			children = (
 				365986F22D57888000BCAAC3 /* AppDelegate.swift */,
 				365986F42D57888000BCAAC3 /* SceneDelegate.swift */,
+				33DAE0BE2E8B96F30005E045 /* AppCoordinator.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -768,6 +798,10 @@
 			children = (
 				D336EEE9FD4AE07CBC300791 /* Pods-MazaApp.debug.xcconfig */,
 				53A47EE1DFA492F4FAB4977F /* Pods-MazaApp.release.xcconfig */,
+				5B07CF3FDF227EF3360CD4C6 /* Pods-MazaAppTests.debug.xcconfig */,
+				48611C7268ABEDA328F390DC /* Pods-MazaAppTests.release.xcconfig */,
+				96575C25934D25758E7BF8A9 /* Pods-MazaAppUITests.debug.xcconfig */,
+				A0A604234D90308D2484D959 /* Pods-MazaAppUITests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -776,6 +810,8 @@
 			isa = PBXGroup;
 			children = (
 				5B60F4C15A80E88D7CCCC367 /* Pods_MazaApp.framework */,
+				47B87DD68BA8309454A5A642 /* Pods_MazaAppTests.framework */,
+				9F7DEAF6F1FE7D4CCF9B04EB /* Pods_MazaAppUITests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -787,6 +823,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 33D9C3362E5CB561006B18A6 /* Build configuration list for PBXNativeTarget "MazaAppTests" */;
 			buildPhases = (
+				DF626F4E62B96777E2900740 /* [CP] Check Pods Manifest.lock */,
 				33D9C32C2E5CB561006B18A6 /* Sources */,
 				33D9C32D2E5CB561006B18A6 /* Frameworks */,
 				33D9C32E2E5CB561006B18A6 /* Resources */,
@@ -805,6 +842,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 33D9C3452E5CB5D3006B18A6 /* Build configuration list for PBXNativeTarget "MazaAppUITests" */;
 			buildPhases = (
+				334C2CB71058E1C72D806055 /* [CP] Check Pods Manifest.lock */,
 				33D9C3392E5CB5D3006B18A6 /* Sources */,
 				33D9C33A2E5CB5D3006B18A6 /* Frameworks */,
 				33D9C33B2E5CB5D3006B18A6 /* Resources */,
@@ -909,6 +947,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		334C2CB71058E1C72D806055 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MazaAppUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		3F067DC7262358B23D1A0164 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -948,6 +1008,28 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		DF626F4E62B96777E2900740 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MazaAppTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -955,7 +1037,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33D9C3332E5CB561006B18A6 /* MazaAppTests.swift in Sources */,
+				33DAE0C22E8B9F4E0005E045 /* MockAuthRepository.swift in Sources */,
+				33DAE0C42E8B9F880005E045 /* AuthViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -974,6 +1057,7 @@
 			files = (
 				368F93E02D5A3634008BE1EA /* BaseViewController.swift in Sources */,
 				36C005BD2D5DCC8D0012651E /* DetailUserCardTableViewCell.swift in Sources */,
+				33DAE0BF2E8B96F30005E045 /* AppCoordinator.swift in Sources */,
 				33C2B7002E74230200C1BCE6 /* LiveRepositoryService.swift in Sources */,
 				36D51EFB2E34E1FE004D9D01 /* TrendingHeaderView.swift in Sources */,
 				330ECBDD2E77BA8A00EACFF5 /* UITextFieldExtens.swift in Sources */,
@@ -994,6 +1078,7 @@
 				336697782E7043E500095E03 /* FavoriteProductViewCtr.swift in Sources */,
 				3653D3FC2D61FE7B000E4BC7 /* BaseCollectionViewCell.swift in Sources */,
 				368F93F02D5A4B56008BE1EA /* UITableViewCellExtens.swift in Sources */,
+				33DAE0BB2E8B94000005E045 /* AuthUseCase.swift in Sources */,
 				360210202E38F9BA00D9C23D /* ImageHeaderTableViewCell.swift in Sources */,
 				339B24782E6840550029A81B /* SignUpViewCtr.swift in Sources */,
 				368F93E22D5A365B008BE1EA /* BaseTableViewCell.swift in Sources */,
@@ -1051,6 +1136,7 @@
 				3659870F2D57969400BCAAC3 /* HomeViewCtr.swift in Sources */,
 				36FA0D5B2D59C8CF009A3BEC /* HomeSearchViewCtr.swift in Sources */,
 				33C2B7022E74231500C1BCE6 /* LiveRepositoryProtocol.swift in Sources */,
+				33DAE0BD2E8B95740005E045 /* AuthViewModel.swift in Sources */,
 				33D9C34B2E5CB87F006B18A6 /* SQLiteHelper.swift in Sources */,
 				3653D4002D62151C000E4BC7 /* LiveVideoCollectionViewCell.swift in Sources */,
 				33C2B7122E74662000C1BCE6 /* PokemonDetailViewCtr.swift in Sources */,
@@ -1086,6 +1172,7 @@
 /* Begin XCBuildConfiguration section */
 		33D9C3372E5CB561006B18A6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5B07CF3FDF227EF3360CD4C6 /* Pods-MazaAppTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -1105,6 +1192,7 @@
 		};
 		33D9C3382E5CB561006B18A6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 48611C7268ABEDA328F390DC /* Pods-MazaAppTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -1124,6 +1212,7 @@
 		};
 		33D9C3462E5CB5D3006B18A6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 96575C25934D25758E7BF8A9 /* Pods-MazaAppUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1142,6 +1231,7 @@
 		};
 		33D9C3472E5CB5D3006B18A6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A0A604234D90308D2484D959 /* Pods-MazaAppUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

@@ -4,8 +4,8 @@
 target 'MazaApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
-
-   # Pods
+  
+  # Pods
   pod 'SnapKit'
   pod 'RxSwift', '~> 6.5'
   pod 'RxCocoa', '~> 6.5'
@@ -18,10 +18,18 @@ target 'MazaApp' do
   pod 'MBProgressHUD', '~> 1.2'
   pod 'SQLite.swift', '~> 0.13.3'
   pod 'SkeletonView', '1.29.2'
-
+  
   # Firebase
   pod 'Firebase/Analytics'
   pod 'Firebase/Storage'
   pod 'Firebase/Firestore'
-
+  
+  target 'MazaAppTests' do
+    inherit! :search_paths
+  end
+  
+  target 'MazaAppUITests' do
+    inherit! :search_paths
+  end
+  
 end
