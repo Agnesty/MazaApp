@@ -49,7 +49,7 @@ class TrendingViewCtr: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
-        tableView.register(ProductListTableViewCell.self, forCellReuseIdentifier: ProductListTableViewCell.identifier)
+        tableView.register(ProductPagerTableViewCell.self, forCellReuseIdentifier: ProductPagerTableViewCell.identifier)
         
         headerView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
@@ -87,7 +87,9 @@ class TrendingViewCtr: BaseViewController {
                 self.tableView.reloadData()
                 self.tabHomeStickyHeader.configureTabs(tabs)
                 self.tabHomeStickyHeader.didSelectTab = { [weak self] index in
-                    self?.updateProducts(forTabIndex: index)
+                    if let pagerCell = self?.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProductPagerTableViewCell {
+                        pagerCell.scrollToPage(index: index)
+                    }
                 }
                 self.refreshControl.endRefreshing()
             }
@@ -123,21 +125,6 @@ class TrendingViewCtr: BaseViewController {
     @objc private func refreshTriggered() {
         viewModel.allCallTrendingAPI()
     }
-    
-    private func updateProducts(forTabIndex index: Int) {
-        let responses = viewModel.productResponse.value
-        guard responses.indices.contains(index) else { return }
-        
-        let response = responses[index]
-        let products = viewModel.products(for: response.id)
-        print("✅ Trending Products for \(response.productSource): \(products.count)")
-        
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: SectionTrending.trendingProduct.rawValue)) as? ProductListTableViewCell {
-            cell.configure(with: products)
-        }
-        
-        tabHomeStickyHeader.setSelectedTab(index)
-    }
 }
 
 extension TrendingViewCtr: UITableViewDataSource, UITableViewDelegate {
@@ -156,22 +143,30 @@ extension TrendingViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
+        let sectionType = SectionTrending(rawValue: indexPath.section)
+        switch sectionType {
+        case .trendingProduct:
+            let headerHeight: CGFloat = headerView.bounds.height
+            let tabHeight: CGFloat = tabHomeStickyHeader.bounds.height
+            let totalTop = headerHeight + tabHeight + view.safeAreaInsets.top
+            let availableHeight = view.bounds.height - totalTop - view.safeAreaInsets.bottom
+            return availableHeight
+        default:
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let sectionType = SectionTrending(rawValue: indexPath.section)
         switch sectionType {
         case .trendingProduct:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductListTableViewCell.identifier, for: indexPath) as? ProductListTableViewCell else { return UITableViewCell() }
-            
-            if let firstResponse = viewModel.productResponse.value.first {
-                let products = viewModel.products(for: firstResponse.id)
-                cell.configure(with: products)
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductPagerTableViewCell.identifier, for: indexPath) as? ProductPagerTableViewCell else { return UITableViewCell() }
+            let tabs = viewModel.productResponse.value.map { TabsHomeMenu(id: $0.id, tabName: $0.productSource) }
+            cell.configure(categories: tabs, productsDict: viewModel.products.value)
+            cell.didScrollToPage = { [weak self] index in
+                self?.tabHomeStickyHeader.setSelectedTab(index)
             }
-            
             cell.didSelectProduct = { [weak self] product in
-                print("Selected product: \(String(describing: product.productName))")
                 let detailVC = ProductDetailViewCtr()
                 detailVC.product = product
                 self?.navigationController?.pushViewController(detailVC, animated: true)

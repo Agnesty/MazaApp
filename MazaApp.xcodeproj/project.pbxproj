@@ -19,6 +19,8 @@
 		332FCC8A2E6D495F009A46DF /* TrendingRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332FCC892E6D495F009A46DF /* TrendingRepositoryProtocol.swift */; };
 		332FCC8C2E6D6DB8009A46DF /* PageContainerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332FCC8B2E6D6DB8009A46DF /* PageContainerTableViewCell.swift */; };
 		332FCC8E2E6D7060009A46DF /* ProductListViewCtr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332FCC8D2E6D7060009A46DF /* ProductListViewCtr.swift */; };
+		333EAA282E8CEBA900E3D27F /* ProductPagerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333EAA272E8CEBA900E3D27F /* ProductPagerTableViewCell.swift */; };
+		333EAA2A2E8CEBEF00E3D27F /* ProductGridPageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333EAA292E8CEBEF00E3D27F /* ProductGridPageCell.swift */; };
 		335FB7322E419D1E00E659F3 /* CartViewCtr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335FB7312E419D1E00E659F3 /* CartViewCtr.swift */; };
 		335FB7342E41B24A00E659F3 /* ChatViewCtr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335FB7332E41B24A00E659F3 /* ChatViewCtr.swift */; };
 		336697722E7038EF00095E03 /* CoreDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 336697702E7038EF00095E03 /* CoreDataModel.xcdatamodeld */; };
@@ -134,6 +136,8 @@
 		332FCC892E6D495F009A46DF /* TrendingRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingRepositoryProtocol.swift; sourceTree = "<group>"; };
 		332FCC8B2E6D6DB8009A46DF /* PageContainerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageContainerTableViewCell.swift; sourceTree = "<group>"; };
 		332FCC8D2E6D7060009A46DF /* ProductListViewCtr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductListViewCtr.swift; sourceTree = "<group>"; };
+		333EAA272E8CEBA900E3D27F /* ProductPagerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductPagerTableViewCell.swift; sourceTree = "<group>"; };
+		333EAA292E8CEBEF00E3D27F /* ProductGridPageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductGridPageCell.swift; sourceTree = "<group>"; };
 		335FB7312E419D1E00E659F3 /* CartViewCtr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewCtr.swift; sourceTree = "<group>"; };
 		335FB7332E41B24A00E659F3 /* ChatViewCtr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewCtr.swift; sourceTree = "<group>"; };
 		336697712E7038EF00095E03 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -512,6 +516,8 @@
 				3370597A2E6B07A1005145E7 /* BannerSwitchCollectionViewCell.swift */,
 				332FCC8B2E6D6DB8009A46DF /* PageContainerTableViewCell.swift */,
 				33C2B70D2E744A4700C1BCE6 /* PokemonCollectionViewCell.swift */,
+				333EAA272E8CEBA900E3D27F /* ProductPagerTableViewCell.swift */,
+				333EAA292E8CEBEF00E3D27F /* ProductGridPageCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -1055,6 +1061,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				333EAA2A2E8CEBEF00E3D27F /* ProductGridPageCell.swift in Sources */,
 				368F93E02D5A3634008BE1EA /* BaseViewController.swift in Sources */,
 				36C005BD2D5DCC8D0012651E /* DetailUserCardTableViewCell.swift in Sources */,
 				33DAE0BF2E8B96F30005E045 /* AppCoordinator.swift in Sources */,
@@ -1070,6 +1077,7 @@
 				36D51EE72E34C8E1004D9D01 /* ListProductCollectionViewCell.swift in Sources */,
 				365987192D57985B00BCAAC3 /* SignInViewCtr.swift in Sources */,
 				36D51EFD2E34E315004D9D01 /* TrendingItemCollectionViewCell.swift in Sources */,
+				333EAA282E8CEBA900E3D27F /* ProductPagerTableViewCell.swift in Sources */,
 				33D9C3292E5CB3FC006B18A6 /* HomeRepositoryService.swift in Sources */,
 				339B24812E68432C0029A81B /* UIViewCtrExtens.swift in Sources */,
 				360210282E3914FF00D9C23D /* TabHomeHeaderView.swift in Sources */,
