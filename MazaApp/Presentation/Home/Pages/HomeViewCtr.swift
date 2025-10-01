@@ -19,6 +19,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         case recommendationProduct
     }
     
+    private var isHeaderSticky: Bool = false
     private let viewModel = HomeViewModel.shared
     private let disposeBag = DisposeBag()
     private let refreshControl = UIRefreshControl()
@@ -119,8 +120,6 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         setupUI()
         setupRefreshControl()
         bindViewModel()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(pageDidChange(_:)), name: .pageDidChange, object: nil)
     }
     
     private func setupUI() {
@@ -142,7 +141,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         tableView.register(BannerSwitchTableViewCell.self, forCellReuseIdentifier: BannerSwitchTableViewCell.identifier)
         tableView.register(DetailUserCardTableViewCell.self, forCellReuseIdentifier: DetailUserCardTableViewCell.identifier)
         tableView.register(SellingServiceTableViewCell.self, forCellReuseIdentifier: SellingServiceTableViewCell.identifier)
-        tableView.register(PageContainerTableViewCell.self, forCellReuseIdentifier: PageContainerTableViewCell.identifier)
+        tableView.register(ProductPagerTableViewCell.self, forCellReuseIdentifier: ProductPagerTableViewCell.identifier)
         
         // Delegate untuk TextField
         searchTextField.delegate = self
@@ -224,7 +223,13 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
                 self?.tableView.reloadData()
                 self?.tabHomeStickyHeader.configureTabs(homeData.tabsHomeMenu)
                 self?.tabHomeStickyHeader.didSelectTab = { [weak self] index in
-                    self?.updateProducts(forTabIndex: index)
+                    if let pagerCell = self?.tableView.cellForRow(
+                           at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)
+                       ) as? ProductPagerTableViewCell {
+                           pagerCell.scrollToPage(index: index)
+                       }
+                    self?.tableView.beginUpdates()
+                    self?.tableView.endUpdates()
                 }
                 self?.refreshControl.endRefreshing()
             })
@@ -252,15 +257,6 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
             .disposed(by: disposeBag)
     }
     
-    private func updateProducts(forTabIndex index: Int) {
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)) as? PageContainerTableViewCell {
-            cell.setPage(index: index)
-        }
-        tabHomeStickyHeader.setSelectedTab(index)
-        tableView.beginUpdates()
-        tableView.endUpdates()
-    }
-    
     @objc private func iconAppTapped() {
         let alert = UIAlertController(title: "Info", message: "Gambar diklik!", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -283,12 +279,6 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         let chatVC = ChatViewCtr()
         chatVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(chatVC, animated: true)
-    }
-    
-    @objc private func pageDidChange(_ notification: Notification) {
-        if let index = notification.object as? Int {
-            tabHomeStickyHeader.setSelectedTab(index)
-        }
     }
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
@@ -321,10 +311,26 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        //        if indexPath.section == SectionHome.recommendationProduct.rawValue {
-        //            return UIScreen.main.bounds.height - 200 // atau tinggi tertentu
-        //        }
-        return UITableView.automaticDimension
+        let sectionType = SectionHome(rawValue: indexPath.section)
+        switch sectionType {
+        case .bannerSwitch, .detailUserCard, .sellingService:
+            return UITableView.automaticDimension
+        case .recommendationProduct:
+            if isHeaderSticky {
+                return UITableView.automaticDimension
+            } else {
+                let tabHeight: CGFloat = max(tabHomeStickyHeader.bounds.height, 45)
+                let topHeight: CGFloat = 36 + 16
+                let availableHeight = view.bounds.height
+                    - view.safeAreaInsets.top
+                    - view.safeAreaInsets.bottom
+                    - tabHeight
+                    - topHeight
+                return availableHeight
+            }
+        default:
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -355,11 +361,21 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
             }
             return cell
         case .recommendationProduct:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: PageContainerTableViewCell.identifier, for: indexPath) as? PageContainerTableViewCell else { return UITableViewCell() }
-            if let tabs = viewModel.homeData.value?.tabsHomeMenu {
-                cell.configure(with: tabs, parent: self)
-            }
-            return cell
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductPagerTableViewCell.identifier, for: indexPath) as? ProductPagerTableViewCell else { return UITableViewCell() }
+               if let tabs = viewModel.homeData.value?.tabsHomeMenu {
+                   let productsDict = viewModel.products.value
+                   cell.isGridScrollEnabled = { false }
+                   cell.configure(categories: tabs, productsDict: productsDict)
+                   cell.didScrollToPage = { [weak self] index in
+                       self?.tabHomeStickyHeader.setSelectedTab(index)
+                   }
+                   cell.didSelectProduct = { [weak self] product in
+                       let detailVC = ProductDetailViewCtr()
+                       detailVC.product = product
+                       self?.navigationController?.pushViewController(detailVC, animated: true)
+                   }
+               }
+               return cell
         default:
             let cell = UITableViewCell()
             cell.backgroundColor = .cyan
@@ -379,6 +395,23 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let headerRect = tableView.rectForHeader(inSection: SectionHome.recommendationProduct.rawValue)
+           let headerFrame = tableView.convert(headerRect, to: view)
+
+           let wasSticky = isHeaderSticky
+           isHeaderSticky = headerFrame.origin.y <= view.safeAreaInsets.top
+
+           if wasSticky != isHeaderSticky {
+               UIView.performWithoutAnimation {
+                   tableView.beginUpdates()
+                   tableView.endUpdates()
+               }
+
+               if let pagerCell = tableView.cellForRow(at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)) as? ProductPagerTableViewCell {
+                   pagerCell.setGridScrollEnabled(isHeaderSticky)
+               }
+           }
+        
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let frameHeight = scrollView.frame.size.height

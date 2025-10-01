@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 class ProductPagerTableViewCell: BaseTableViewCell {
+    var isGridScrollEnabled: (() -> Bool)? = { true }
     var didScrollToPage: ((Int) -> Void)?
     var didSelectProduct: ((Product) -> Void)?
     private var categories: [TabsHomeMenu] = []
@@ -38,6 +39,11 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         setupUI()
     }
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
     private func setupUI() {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -65,6 +71,12 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         let indexPath = IndexPath(item: index, section: 0)
         collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
+    
+    func setGridScrollEnabled(_ enabled: Bool) {
+        for case let cell as ProductGridPageCell in collectionView.visibleCells {
+            cell.isCollectionViewCellScrollEnabled(enabled)
+        }
+    }
 }
 
 extension ProductPagerTableViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -76,7 +88,8 @@ extension ProductPagerTableViewCell: UICollectionViewDataSource, UICollectionVie
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductGridPageCell.identifier, for: indexPath) as? ProductGridPageCell else { return UICollectionViewCell() }
         let cat = categories[indexPath.item]
         let prods = productsDict[cat.id] ?? []
-        
+        let enabled = isGridScrollEnabled?() ?? true
+        cell.isCollectionViewCellScrollEnabled(enabled)
         cell.didSelectProduct = { [weak self] product in
             self?.didSelectProduct?(product)
         }

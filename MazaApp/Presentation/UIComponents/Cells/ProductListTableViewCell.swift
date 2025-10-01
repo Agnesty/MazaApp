@@ -1,5 +1,5 @@
 //
-//  RecommendationForYouTableViewCell.swift
+//  ProductListTableViewCell.swift
 //  MazaApp
 //
 //  Created by Agnes Triselia Yudia on 26/07/25.

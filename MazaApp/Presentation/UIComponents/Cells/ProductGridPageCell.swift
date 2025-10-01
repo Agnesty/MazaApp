@@ -32,12 +32,17 @@ class ProductGridPageCell: BaseCollectionViewCell {
         layout.minimumInteritemSpacing = 4
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        isCollectionViewCellScrollEnabled()
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(ListProductCollectionViewCell.self, forCellWithReuseIdentifier: ListProductCollectionViewCell.identifier)
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { $0.edges.equalToSuperview() }
+    }
+    
+    func isCollectionViewCellScrollEnabled(_ enabled: Bool = true) {
+        collectionView.isScrollEnabled = enabled
     }
     
     func configure(products: [Product]) {
