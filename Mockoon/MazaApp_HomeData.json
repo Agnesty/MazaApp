@@ -1,0 +1,83 @@
+{
+  "banners": [
+    {
+      "id": 1,
+      "imageUrl": "https://images.unsplash.com/photo-1523275335684-37898b6baf30"
+    },
+    {
+      "id": 2,
+      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+    },
+    {
+      "id": 3,
+      "imageUrl": "https://images.unsplash.com/photo-1491553895911-0055eca6402d"
+    }
+  ],
+  "detailUserCards": [
+    {
+      "id": 1,
+      "iconName": "wallet.pass.fill",
+      "text": "Rp0",
+      "bgColorHex": "#DDB892"
+    },
+    {
+      "id": 2,
+      "iconName": "ticket.fill",
+      "text": "Cek Kupon",
+      "bgColorHex": "#DDB892"
+    },
+    {
+      "id": 3,
+      "iconName": "mappin.circle.fill",
+      "text": "Dikirim ke",
+      "bgColorHex": "#DDB892"
+    },
+    {
+      "id": 4,
+      "iconName": "mappin.circle.fill",
+      "text": "Dikirim ke",
+      "bgColorHex": "#DDB892"
+    }
+  ],
+  "sellingServices": [
+    {
+      "id": 1,
+      "imageUrl": "https://plus.unsplash.com/premium_photo-1682310031774-a86fa08fa68f?q=80&w=2412&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "title": "Promo Hari Ini"
+    },
+    {
+      "id": 2,
+      "imageUrl": "https://plus.unsplash.com/premium_photo-1677265808997-3c2c6a7eb59d?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "title": "Top-Up & Tagihan"
+    },
+    {
+      "id": 3,
+      "imageUrl": "https://plus.unsplash.com/premium_photo-1728288594719-0080d468e088?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "title": "Cicil Tanpa Bunga"
+    },
+    {
+      "id": 4,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRswlptkuFRfuREkl5ZAPJTgRYxAfmp00GvGQ&s",
+      "title": "GoPay Later"
+    },
+    {
+      "id": 5,
+      "imageUrl": "https://plus.unsplash.com/premium_photo-1661772819014-1fe81103e12b?q=80&w=992&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "title": "Beauty"
+    }
+  ],
+  "tabsHomeMenu": [
+    {
+      "id": 1,
+      "tabName": "For You"
+    },
+    {
+      "id": 2,
+      "tabName": "Festival"
+    },
+    {
+      "id": 3,
+      "tabName": "Mall"
+    }
+  ]
+}
