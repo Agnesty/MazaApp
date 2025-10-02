@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ProductPagerTableViewCell: BaseTableViewCell {
     var isGridScrollEnabled: (() -> Bool)? = { true }
@@ -16,32 +18,18 @@ class ProductPagerTableViewCell: BaseTableViewCell {
     private var productsDict: [Int: [Product]] = [:]
     
     private var collectionView: UICollectionView!
+    private let disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        contentView.layoutIfNeeded()
-    }
-    
-    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-        contentView.layoutIfNeeded()
-        collectionView.layoutIfNeeded()
-        let contentHeight = collectionView.collectionViewLayout.collectionViewContentSize.height
-        return CGSize(width: targetSize.width, height: contentHeight)
+        observeContentSizeChanges()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupUI()
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        contentView.translatesAutoresizingMaskIntoConstraints = false
+        observeContentSizeChanges()
     }
     
     private func setupUI() {
@@ -57,14 +45,27 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         collectionView.register(ProductGridPageCell.self, forCellWithReuseIdentifier: ProductGridPageCell.identifier)
         
         contentView.addSubview(collectionView)
-        collectionView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.height.equalTo(0) // default dulu, nanti di-update otomatis
+        }
+    }
+    
+    internal func observeContentSizeChanges() {
+        collectionView.rx.observe(\.contentSize)
+            .observe(on: MainScheduler.instance)
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] size in
+                guard let self = self else { return }
+                self.collectionView.snp.updateConstraints { $0.height.equalTo(size.height)}
+            })
+            .disposed(by: disposeBag)
     }
     
     func configure(categories: [TabsHomeMenu], productsDict: [Int: [Product]]) {
         self.categories = categories
         self.productsDict = productsDict
         collectionView.reloadData()
-        collectionView.layoutIfNeeded()
     }
     
     func scrollToPage(index: Int) {
@@ -85,9 +86,14 @@ extension ProductPagerTableViewCell: UICollectionViewDataSource, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductGridPageCell.identifier, for: indexPath) as? ProductGridPageCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: ProductGridPageCell.identifier,
+            for: indexPath
+        ) as? ProductGridPageCell else { return UICollectionViewCell() }
+        
         let cat = categories[indexPath.item]
         let prods = productsDict[cat.id] ?? []
+        
         let enabled = isGridScrollEnabled?() ?? true
         cell.isCollectionViewCellScrollEnabled(enabled)
         cell.didSelectProduct = { [weak self] product in
