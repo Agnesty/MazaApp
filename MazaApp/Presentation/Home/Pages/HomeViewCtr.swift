@@ -136,6 +136,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         // TableView Delegate
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.showsVerticalScrollIndicator = false
         
         // TableView Register
         tableView.register(BannerSwitchTableViewCell.self, forCellReuseIdentifier: BannerSwitchTableViewCell.identifier)
@@ -190,7 +191,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
             chatIcon.heightAnchor.constraint(equalToConstant: 26),
             
             //Container in every section of tableView
-            tableView.topAnchor.constraint(equalTo: IconAppView.bottomAnchor, constant: 16),
+            tableView.topAnchor.constraint(equalTo: IconAppView.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -227,9 +228,8 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
                            at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)
                        ) as? ProductPagerTableViewCell {
                            pagerCell.scrollToPage(index: index)
+                           pagerCell.setGridScrollEnabled(false)
                        }
-                    self?.tableView.beginUpdates()
-                    self?.tableView.endUpdates()
                 }
                 self?.refreshControl.endRefreshing()
             })
@@ -313,21 +313,8 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let sectionType = SectionHome(rawValue: indexPath.section)
         switch sectionType {
-        case .bannerSwitch, .detailUserCard, .sellingService:
+        case .bannerSwitch, .detailUserCard, .sellingService, .recommendationProduct:
             return UITableView.automaticDimension
-        case .recommendationProduct:
-            if isHeaderSticky {
-                return UITableView.automaticDimension
-            } else {
-                let tabHeight: CGFloat = max(tabHomeStickyHeader.bounds.height, 45)
-                let topHeight: CGFloat = 36 + 16
-                let availableHeight = view.bounds.height
-                    - view.safeAreaInsets.top
-                    - view.safeAreaInsets.bottom
-                    - tabHeight
-                    - topHeight
-                return availableHeight
-            }
         default:
             return 0
         }
@@ -364,7 +351,17 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductPagerTableViewCell.identifier, for: indexPath) as? ProductPagerTableViewCell else { return UITableViewCell() }
                if let tabs = viewModel.homeData.value?.tabsHomeMenu {
                    let productsDict = viewModel.products.value
-                   cell.isGridScrollEnabled = { false }
+                   cell.setGridScrollEnabled(false)
+                   cell.didReachTopWhileScrolling = { [weak self] in
+                       guard let self = self else { return }
+                       if let pagerCell = self.tableView.cellForRow(
+                           at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)
+                       ) as? ProductPagerTableViewCell {
+                           pagerCell.setGridScrollEnabled(false)
+                           print("⬆️ Grid scroll disabled karena user scroll ke atas (mentok top)")
+                       }
+                       self.tableView.isScrollEnabled = true
+                   }
                    cell.configure(categories: tabs, productsDict: productsDict)
                    cell.didScrollToPage = { [weak self] index in
                        self?.tabHomeStickyHeader.setSelectedTab(index)
@@ -384,7 +381,7 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return section == SectionHome.recommendationProduct.rawValue ? 45 : .leastNonzeroMagnitude
+        return section == SectionHome.recommendationProduct.rawValue ? 25 : .leastNonzeroMagnitude
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -395,32 +392,38 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView == tableView else { return }
+
         let headerRect = tableView.rectForHeader(inSection: SectionHome.recommendationProduct.rawValue)
-           let headerFrame = tableView.convert(headerRect, to: view)
+        let headerFrame = tableView.convert(headerRect, to: view)
 
-           let wasSticky = isHeaderSticky
-           isHeaderSticky = headerFrame.origin.y <= view.safeAreaInsets.top
+        let stickyThreshold = view.safeAreaInsets.top + IconAppView.bounds.height + 8
+        isHeaderSticky = headerFrame.origin.y <= stickyThreshold
 
-           if wasSticky != isHeaderSticky {
-               UIView.performWithoutAnimation {
-                   tableView.beginUpdates()
-                   tableView.endUpdates()
-               }
+        guard let pagerCell = tableView.cellForRow(at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)) as? ProductPagerTableViewCell,
+              let gridScroll = pagerCell.currentGridScrollView else { return }
 
-               if let pagerCell = tableView.cellForRow(at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)) as? ProductPagerTableViewCell {
-                   pagerCell.setGridScrollEnabled(isHeaderSticky)
-               }
-           }
-        
-        let offsetY = scrollView.contentOffset.y
+        let tableOffsetY = scrollView.contentOffset.y
+        let gridOffsetY = gridScroll.contentOffset.y
+
+        if !isHeaderSticky {
+            pagerCell.setGridScrollEnabled(false)
+            gridScroll.contentOffset = .zero
+        } else {
+            if gridOffsetY <= 0 && tableOffsetY < (tableView.contentSize.height - tableView.bounds.height - 50) {
+                pagerCell.setGridScrollEnabled(false)
+            } else {
+                pagerCell.setGridScrollEnabled(true)
+            }
+        }
+
+        // Infinite scroll
         let contentHeight = scrollView.contentSize.height
         let frameHeight = scrollView.frame.size.height
-        
-        if offsetY > contentHeight - frameHeight - 200 {
+        if tableOffsetY > contentHeight - frameHeight - 200 {
             if let tabs = viewModel.homeData.value?.tabsHomeMenu {
                 let currentTabId = tabs[tabHomeStickyHeader.selectedIndex].id
                 viewModel.loadMoreProducts(for: currentTabId, pageSize: 4)
-                print("📌 ScrollView did scroll with currentTabId:", currentTabId, " (selectedIndex =", tabHomeStickyHeader.selectedIndex, ")")
             }
         }
     }

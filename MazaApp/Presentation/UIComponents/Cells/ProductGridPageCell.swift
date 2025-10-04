@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 
 class ProductGridPageCell: BaseCollectionViewCell {
-    
+    var didReachTopWhileScrolling: (() -> Void)?
     var didSelectProduct: ((Product) -> Void)?
     private var products: [Product] = []
-    private var collectionView: UICollectionView!
+    var collectionView: UICollectionView!
     private var heightCache: [Int: CGFloat] = [:]
     private lazy var sizingCell = ListProductCollectionViewCell()
     
@@ -34,6 +34,7 @@ class ProductGridPageCell: BaseCollectionViewCell {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         isCollectionViewCellScrollEnabled()
         collectionView.backgroundColor = .clear
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(ListProductCollectionViewCell.self, forCellWithReuseIdentifier: ListProductCollectionViewCell.identifier)
@@ -63,9 +64,7 @@ extension ProductGridPageCell: UICollectionViewDataSource, UICollectionViewDeleg
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let columns: CGFloat = 2
         let interitem: CGFloat = 4
         let availableWidth = collectionView.bounds.width
@@ -93,6 +92,13 @@ extension ProductGridPageCell: UICollectionViewDataSource, UICollectionViewDeleg
            let selectedProduct = products[indexPath.item]
            didSelectProduct?(selectedProduct)
        }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        print("🌀 Product nilai ofset Y:", scrollView.contentOffset.y)
+        if scrollView.contentOffset.y <= 0 {
+            didReachTopWhileScrolling?()
+        }
+    }
 }
 
 

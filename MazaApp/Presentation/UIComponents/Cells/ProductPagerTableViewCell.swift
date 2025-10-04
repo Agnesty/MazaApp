@@ -11,7 +11,11 @@ import RxSwift
 import RxCocoa
 
 class ProductPagerTableViewCell: BaseTableViewCell {
-    var isGridScrollEnabled: (() -> Bool)? = { true }
+    var didReachTopWhileScrolling: (() -> Void)?
+    var currentGridScrollView: UIScrollView? {
+        guard let visibleCell = collectionView.visibleCells.first as? ProductGridPageCell else { return nil }
+        return visibleCell.collectionView
+    }
     var didScrollToPage: ((Int) -> Void)?
     var didSelectProduct: ((Product) -> Void)?
     private var categories: [TabsHomeMenu] = []
@@ -19,6 +23,7 @@ class ProductPagerTableViewCell: BaseTableViewCell {
     
     private var collectionView: UICollectionView!
     private let disposeBag = DisposeBag()
+    private var hasInitializedHeight = false
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -47,7 +52,7 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(0) // default dulu, nanti di-update otomatis
+            make.height.equalTo(1225) // 4 kali tinggi 1 cell
         }
     }
     
@@ -57,15 +62,35 @@ class ProductPagerTableViewCell: BaseTableViewCell {
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] size in
                 guard let self = self else { return }
-                self.collectionView.snp.updateConstraints { $0.height.equalTo(size.height)}
+                guard size.height > 50 else { return }
+                self.collectionView.snp.updateConstraints { $0.height.equalTo(size.height) }
+                self.collectionView.layoutIfNeeded()
+                
+                if !self.hasInitializedHeight {
+                    self.hasInitializedHeight = true
+                    self.setGridScrollEnabled(false)
+                }
+                
+                if let tableView = self.superview as? UITableView {
+                    UIView.performWithoutAnimation {
+                        tableView.layoutIfNeeded()
+                    }
+                }
             })
             .disposed(by: disposeBag)
     }
     
+    // MARK: - Configure
     func configure(categories: [TabsHomeMenu], productsDict: [Int: [Product]]) {
         self.categories = categories
         self.productsDict = productsDict
+        hasInitializedHeight = false
+        
         collectionView.reloadData()
+        DispatchQueue.main.async {
+            self.collectionView.layoutIfNeeded()
+            self.setGridScrollEnabled(false)
+        }
     }
     
     func scrollToPage(index: Int) {
@@ -77,6 +102,7 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         for case let cell as ProductGridPageCell in collectionView.visibleCells {
             cell.isCollectionViewCellScrollEnabled(enabled)
         }
+        print("🌀 Grid scroll enabled:", enabled)
     }
 }
 
@@ -86,16 +112,13 @@ extension ProductPagerTableViewCell: UICollectionViewDataSource, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: ProductGridPageCell.identifier,
-            for: indexPath
-        ) as? ProductGridPageCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductGridPageCell.identifier, for: indexPath) as? ProductGridPageCell else { return UICollectionViewCell() }
         
         let cat = categories[indexPath.item]
         let prods = productsDict[cat.id] ?? []
-        
-        let enabled = isGridScrollEnabled?() ?? true
-        cell.isCollectionViewCellScrollEnabled(enabled)
+        cell.didReachTopWhileScrolling = { [weak self] in
+            self?.didReachTopWhileScrolling?()
+        }
         cell.didSelectProduct = { [weak self] product in
             self?.didSelectProduct?(product)
         }
@@ -110,5 +133,6 @@ extension ProductPagerTableViewCell: UICollectionViewDataSource, UICollectionVie
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let page = Int(scrollView.contentOffset.x / scrollView.bounds.width)
         didScrollToPage?(page)
+        setGridScrollEnabled(false)
     }
 }
