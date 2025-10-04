@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 
 class ProductPagerTableViewCell: BaseTableViewCell {
+    var allowStickySync: Bool = true
     var didReachTopWhileScrolling: (() -> Void)?
     var currentGridScrollView: UIScrollView? {
         guard let visibleCell = collectionView.visibleCells.first as? ProductGridPageCell else { return nil }
@@ -99,6 +100,7 @@ class ProductPagerTableViewCell: BaseTableViewCell {
     }
     
     func setGridScrollEnabled(_ enabled: Bool) {
+        guard allowStickySync else { return }
         for case let cell as ProductGridPageCell in collectionView.visibleCells {
             cell.isCollectionViewCellScrollEnabled(enabled)
         }

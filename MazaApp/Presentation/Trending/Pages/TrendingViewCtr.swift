@@ -162,6 +162,8 @@ extension TrendingViewCtr: UITableViewDataSource, UITableViewDelegate {
         case .trendingProduct:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductPagerTableViewCell.identifier, for: indexPath) as? ProductPagerTableViewCell else { return UITableViewCell() }
             let tabs = viewModel.productResponse.value.map { TabsHomeMenu(id: $0.id, tabName: $0.productSource) }
+            cell.allowStickySync = false
+            cell.setGridScrollEnabled(true)
             cell.configure(categories: tabs, productsDict: viewModel.products.value)
             cell.didScrollToPage = { [weak self] index in
                 self?.tabHomeStickyHeader.setSelectedTab(index)
