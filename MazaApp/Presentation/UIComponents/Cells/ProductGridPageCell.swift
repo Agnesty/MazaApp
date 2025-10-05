@@ -11,6 +11,7 @@ import UIKit
 class ProductGridPageCell: BaseCollectionViewCell {
     
     var didSelectProduct: ((Product) -> Void)?
+    var didUpdateHeight: ((CGFloat) -> Void)?
     private var products: [Product] = []
     private var collectionView: UICollectionView!
     private var heightCache: [Int: CGFloat] = [:]
@@ -36,6 +37,8 @@ class ProductGridPageCell: BaseCollectionViewCell {
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(ListProductCollectionViewCell.self, forCellWithReuseIdentifier: ListProductCollectionViewCell.identifier)
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { $0.edges.equalToSuperview() }
@@ -49,6 +52,14 @@ class ProductGridPageCell: BaseCollectionViewCell {
         self.products = products
         heightCache.removeAll()
         collectionView.reloadData()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+            guard let self = self else { return }
+            self.collectionView.layoutIfNeeded()
+            
+            let newHeight = self.collectionView.contentSize.height
+            if newHeight > 100 { self.didUpdateHeight?(newHeight)}
+        }
     }
 }
 
@@ -90,11 +101,8 @@ extension ProductGridPageCell: UICollectionViewDataSource, UICollectionViewDeleg
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-           let selectedProduct = products[indexPath.item]
-           didSelectProduct?(selectedProduct)
-       }
+        let selectedProduct = products[indexPath.item]
+        didSelectProduct?(selectedProduct)
+    }
 }
-
-
-
 

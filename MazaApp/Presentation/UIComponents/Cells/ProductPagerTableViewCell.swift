@@ -7,29 +7,24 @@
 
 import Foundation
 import UIKit
-import RxSwift
-import RxCocoa
 
 class ProductPagerTableViewCell: BaseTableViewCell {
-    var isGridScrollEnabled: (() -> Bool)? = { true }
+    var enableToScroll: Bool = true
     var didScrollToPage: ((Int) -> Void)?
     var didSelectProduct: ((Product) -> Void)?
     private var categories: [TabsHomeMenu] = []
     private var productsDict: [Int: [Product]] = [:]
-    
     private var collectionView: UICollectionView!
-    private let disposeBag = DisposeBag()
+    private var isUpdatingHeight = false
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
-        observeContentSizeChanges()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupUI()
-        observeContentSizeChanges()
     }
     
     private func setupUI() {
@@ -39,44 +34,31 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.isPagingEnabled = true
+        collectionView.isScrollEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.backgroundColor = .clear
         collectionView.register(ProductGridPageCell.self, forCellWithReuseIdentifier: ProductGridPageCell.identifier)
         
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(0) // default dulu, nanti di-update otomatis
+            make.height.equalTo(800)
         }
-    }
-    
-    internal func observeContentSizeChanges() {
-        collectionView.rx.observe(\.contentSize)
-            .observe(on: MainScheduler.instance)
-            .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] size in
-                guard let self = self else { return }
-                self.collectionView.snp.updateConstraints { $0.height.equalTo(size.height)}
-            })
-            .disposed(by: disposeBag)
     }
     
     func configure(categories: [TabsHomeMenu], productsDict: [Int: [Product]]) {
         self.categories = categories
         self.productsDict = productsDict
         collectionView.reloadData()
+        collectionView.layoutIfNeeded()
     }
     
     func scrollToPage(index: Int) {
         let indexPath = IndexPath(item: index, section: 0)
         collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-    }
-    
-    func setGridScrollEnabled(_ enabled: Bool) {
-        for case let cell as ProductGridPageCell in collectionView.visibleCells {
-            cell.isCollectionViewCellScrollEnabled(enabled)
-        }
     }
 }
 
@@ -93,11 +75,23 @@ extension ProductPagerTableViewCell: UICollectionViewDataSource, UICollectionVie
         
         let cat = categories[indexPath.item]
         let prods = productsDict[cat.id] ?? []
-        
-        let enabled = isGridScrollEnabled?() ?? true
-        cell.isCollectionViewCellScrollEnabled(enabled)
         cell.didSelectProduct = { [weak self] product in
             self?.didSelectProduct?(product)
+        }
+        cell.isCollectionViewCellScrollEnabled(enableToScroll)
+        cell.didUpdateHeight = { [weak self] height in
+            guard let self = self else { return }
+            self.collectionView.snp.updateConstraints { $0.height.equalTo(height) }
+            self.collectionView.layoutIfNeeded()
+            self.setNeedsLayout()
+            self.layoutIfNeeded()
+
+            if let tableView = self.superview as? UITableView {
+                UIView.performWithoutAnimation {
+                    tableView.beginUpdates()
+                    tableView.endUpdates()
+                }
+            }
         }
         cell.configure(products: prods)
         return cell
