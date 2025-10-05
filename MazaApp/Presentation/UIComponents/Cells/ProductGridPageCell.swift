@@ -75,29 +75,49 @@ extension ProductGridPageCell: UICollectionViewDataSource, UICollectionViewDeleg
     }
     
     func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let columns: CGFloat = 2
-        let interitem: CGFloat = 4
-        let availableWidth = collectionView.bounds.width
-            - collectionView.contentInset.left
-            - collectionView.contentInset.right
-            - (columns - 1) * interitem
-        let itemWidth = floor(availableWidth / columns)
+                           layout collectionViewLayout: UICollectionViewLayout,
+                           sizeForItemAt indexPath: IndexPath) -> CGSize {
+           let columns: CGFloat = 2
+           let interitem: CGFloat = 4
+           let availableWidth = collectionView.bounds.width
+               - collectionView.contentInset.left
+               - collectionView.contentInset.right
+               - (columns - 1) * interitem
+           let itemWidth = floor(availableWidth / columns)
         
-        if let h = heightCache[indexPath.item] {
-            return CGSize(width: itemWidth, height: h)
-        }
-        
-        sizingCell.frame = CGRect(x: 0, y: 0, width: itemWidth, height: 0)
-        sizingCell.configure(with: products[indexPath.item])
+           let row = indexPath.item / Int(columns)
+           let leftIndex = row * Int(columns)
+           let rightIndex = min(leftIndex + 1, products.count - 1)
+
+           if let cachedHeight = heightCache[row] {
+               return CGSize(width: itemWidth, height: cachedHeight)
+           }
+
+           let leftHeight = measureHeight(for: products[leftIndex], width: itemWidth)
+           let rightHeight = measureHeight(for: products[rightIndex], width: itemWidth)
+
+           let rowHeight = max(leftHeight, rightHeight)
+
+           heightCache[leftIndex] = rowHeight
+           heightCache[rightIndex] = rowHeight
+           heightCache[row] = rowHeight
+
+           return CGSize(width: itemWidth, height: rowHeight)
+       }
+
+    private func measureHeight(for product: Product, width: CGFloat) -> CGFloat {
+        sizingCell.frame = CGRect(x: 0, y: 0, width: width, height: .greatestFiniteMagnitude)
+        sizingCell.configure(with: product)
         sizingCell.setNeedsLayout()
         sizingCell.layoutIfNeeded()
-        let target = CGSize(width: itemWidth, height: UIView.layoutFittingCompressedSize.height)
-        let size = sizingCell.contentView.systemLayoutSizeFitting(target, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
-        let finalHeight = ceil(size.height)
-        heightCache[indexPath.item] = finalHeight
-        return CGSize(width: itemWidth, height: finalHeight)
+
+        let target = CGSize(width: width, height: UIView.layoutFittingExpandedSize.height)
+        let size = sizingCell.contentView.systemLayoutSizeFitting(
+            target,
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        )
+        return ceil(size.height)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
