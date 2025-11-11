@@ -49,7 +49,7 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(1)
+            make.height.equalTo(UIScreen.main.bounds.height)
         }
     }
     

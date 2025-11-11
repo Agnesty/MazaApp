@@ -48,7 +48,7 @@ class ProductGridPageCell: BaseCollectionViewCell {
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints {
             $0.width.equalToSuperview()
-            $0.height.equalTo(1)
+            $0.height.equalTo(UIScreen.main.bounds.height)
         }
     }
     
