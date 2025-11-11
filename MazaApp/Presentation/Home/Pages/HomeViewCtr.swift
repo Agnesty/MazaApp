@@ -379,7 +379,7 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return section == SectionHome.recommendationProduct.rawValue ? 25 : .leastNonzeroMagnitude
+        return section == SectionHome.recommendationProduct.rawValue ? 35 : .leastNonzeroMagnitude
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
