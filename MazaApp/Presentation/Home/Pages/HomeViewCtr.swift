@@ -136,6 +136,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         // TableView Delegate
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.showsVerticalScrollIndicator = false
         
         // TableView Register
         tableView.register(BannerSwitchTableViewCell.self, forCellReuseIdentifier: BannerSwitchTableViewCell.identifier)
@@ -190,7 +191,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
             chatIcon.heightAnchor.constraint(equalToConstant: 26),
             
             //Container in every section of tableView
-            tableView.topAnchor.constraint(equalTo: IconAppView.bottomAnchor, constant: 16),
+            tableView.topAnchor.constraint(equalTo: IconAppView.bottomAnchor, constant: 8),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -227,7 +228,7 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
                            at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)
                        ) as? ProductPagerTableViewCell {
                            pagerCell.scrollToPage(index: index)
-                       }
+                    }
                     self?.tableView.beginUpdates()
                     self?.tableView.endUpdates()
                 }
@@ -313,21 +314,8 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let sectionType = SectionHome(rawValue: indexPath.section)
         switch sectionType {
-        case .bannerSwitch, .detailUserCard, .sellingService:
+        case .bannerSwitch, .detailUserCard, .sellingService, .recommendationProduct:
             return UITableView.automaticDimension
-        case .recommendationProduct:
-            if isHeaderSticky {
-                return UITableView.automaticDimension
-            } else {
-                let tabHeight: CGFloat = max(tabHomeStickyHeader.bounds.height, 45)
-                let topHeight: CGFloat = 36 + 16
-                let availableHeight = view.bounds.height
-                    - view.safeAreaInsets.top
-                    - view.safeAreaInsets.bottom
-                    - tabHeight
-                    - topHeight
-                return availableHeight
-            }
         default:
             return 0
         }
@@ -364,10 +352,17 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductPagerTableViewCell.identifier, for: indexPath) as? ProductPagerTableViewCell else { return UITableViewCell() }
                if let tabs = viewModel.homeData.value?.tabsHomeMenu {
                    let productsDict = viewModel.products.value
-                   cell.isGridScrollEnabled = { false }
+                   cell.enableToScroll = false
                    cell.configure(categories: tabs, productsDict: productsDict)
                    cell.didScrollToPage = { [weak self] index in
                        self?.tabHomeStickyHeader.setSelectedTab(index)
+                   }
+                   cell.didChangeContentSize = { [weak self] in
+                    guard let self = self else { return }
+                       tableView.invalidateIntrinsicContentSize()
+                       tableView.contentSize = CGSizeMake(self.view.bounds.width, $0)
+                       tableView.beginUpdates()
+                       tableView.endUpdates()
                    }
                    cell.didSelectProduct = { [weak self] product in
                        let detailVC = ProductDetailViewCtr()
@@ -384,7 +379,7 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return section == SectionHome.recommendationProduct.rawValue ? 45 : .leastNonzeroMagnitude
+        return section == SectionHome.recommendationProduct.rawValue ? 25 : .leastNonzeroMagnitude
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -395,23 +390,6 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let headerRect = tableView.rectForHeader(inSection: SectionHome.recommendationProduct.rawValue)
-           let headerFrame = tableView.convert(headerRect, to: view)
-
-           let wasSticky = isHeaderSticky
-           isHeaderSticky = headerFrame.origin.y <= view.safeAreaInsets.top
-
-           if wasSticky != isHeaderSticky {
-               UIView.performWithoutAnimation {
-                   tableView.beginUpdates()
-                   tableView.endUpdates()
-               }
-
-               if let pagerCell = tableView.cellForRow(at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)) as? ProductPagerTableViewCell {
-                   pagerCell.setGridScrollEnabled(isHeaderSticky)
-               }
-           }
-        
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let frameHeight = scrollView.frame.size.height

@@ -85,7 +85,7 @@ class ListProductCollectionViewCell: BaseCollectionViewCell {
         
         promoLabel.font = .systemFont(ofSize: 11)
         promoLabel.textColor = .darkGray
-        promoLabel.numberOfLines = 0
+        promoLabel.numberOfLines = 1
         promoLabel.lineBreakMode = .byTruncatingTail
         promoLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         promoLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)

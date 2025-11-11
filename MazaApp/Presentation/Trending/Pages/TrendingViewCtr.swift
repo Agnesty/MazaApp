@@ -39,6 +39,7 @@ class TrendingViewCtr: BaseViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupView()
+        setupRefreshControl()
         bindViewModel()
     }
     
@@ -61,8 +62,6 @@ class TrendingViewCtr: BaseViewController {
             make.top.equalTo(headerView.snp.bottom)
             make.left.right.bottom.equalToSuperview()
         }
-        
-        setupRefreshControl()
         
         headerView.didTapFavorite = { [weak self] in
             let favoriteVC = FavoriteProductViewCtr()
@@ -146,11 +145,7 @@ extension TrendingViewCtr: UITableViewDataSource, UITableViewDelegate {
         let sectionType = SectionTrending(rawValue: indexPath.section)
         switch sectionType {
         case .trendingProduct:
-            let headerHeight: CGFloat = headerView.bounds.height
-            let tabHeight: CGFloat = tabHomeStickyHeader.bounds.height
-            let totalTop = headerHeight + tabHeight + view.safeAreaInsets.top
-            let availableHeight = view.bounds.height - totalTop - view.safeAreaInsets.bottom
-            return availableHeight
+            return UITableView.automaticDimension
         default:
             return 0
         }
@@ -165,6 +160,13 @@ extension TrendingViewCtr: UITableViewDataSource, UITableViewDelegate {
             cell.configure(categories: tabs, productsDict: viewModel.products.value)
             cell.didScrollToPage = { [weak self] index in
                 self?.tabHomeStickyHeader.setSelectedTab(index)
+            }
+            cell.didChangeContentSize = { [weak self] in
+             guard let self = self else { return }
+                tableView.invalidateIntrinsicContentSize()
+                tableView.contentSize = CGSizeMake(self.view.bounds.width, $0)
+                tableView.beginUpdates()
+                tableView.endUpdates()
             }
             cell.didSelectProduct = { [weak self] product in
                 let detailVC = ProductDetailViewCtr()

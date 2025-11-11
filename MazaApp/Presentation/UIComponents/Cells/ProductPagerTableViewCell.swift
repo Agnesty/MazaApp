@@ -7,41 +7,28 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ProductPagerTableViewCell: BaseTableViewCell {
-    var isGridScrollEnabled: (() -> Bool)? = { true }
+    var enableToScroll: Bool = true
     var didScrollToPage: ((Int) -> Void)?
     var didSelectProduct: ((Product) -> Void)?
     private var categories: [TabsHomeMenu] = []
     private var productsDict: [Int: [Product]] = [:]
-    
     private var collectionView: UICollectionView!
+    private var isUpdatingHeight = false
+    private let disposeBag = DisposeBag()
+    internal var didChangeContentSize: ((CGFloat) -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        contentView.layoutIfNeeded()
-    }
-    
-    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-        contentView.layoutIfNeeded()
-        collectionView.layoutIfNeeded()
-        let contentHeight = collectionView.collectionViewLayout.collectionViewContentSize.height
-        return CGSize(width: targetSize.width, height: contentHeight)
-    }
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupUI()
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        contentView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupUI() {
@@ -51,31 +38,30 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.isPagingEnabled = true
+        collectionView.isScrollEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.backgroundColor = .clear
         collectionView.register(ProductGridPageCell.self, forCellWithReuseIdentifier: ProductGridPageCell.identifier)
         
         contentView.addSubview(collectionView)
-        collectionView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.height.equalTo(UIScreen.main.bounds.height)
+        }
     }
     
     func configure(categories: [TabsHomeMenu], productsDict: [Int: [Product]]) {
         self.categories = categories
         self.productsDict = productsDict
         collectionView.reloadData()
-        collectionView.layoutIfNeeded()
     }
     
     func scrollToPage(index: Int) {
         let indexPath = IndexPath(item: index, section: 0)
         collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-    }
-    
-    func setGridScrollEnabled(_ enabled: Bool) {
-        for case let cell as ProductGridPageCell in collectionView.visibleCells {
-            cell.isCollectionViewCellScrollEnabled(enabled)
-        }
     }
 }
 
@@ -85,13 +71,24 @@ extension ProductPagerTableViewCell: UICollectionViewDataSource, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductGridPageCell.identifier, for: indexPath) as? ProductGridPageCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: ProductGridPageCell.identifier,
+            for: indexPath
+        ) as? ProductGridPageCell else { return UICollectionViewCell() }
+        
         let cat = categories[indexPath.item]
         let prods = productsDict[cat.id] ?? []
-        let enabled = isGridScrollEnabled?() ?? true
-        cell.isCollectionViewCellScrollEnabled(enabled)
         cell.didSelectProduct = { [weak self] product in
             self?.didSelectProduct?(product)
+        }
+        cell.isCollectionViewCellScrollEnabled(enableToScroll)
+        cell.didChangeContentSize = { [weak self] height in
+            guard let self = self else { return }
+            self.collectionView.snp.updateConstraints { $0.height.equalTo(height) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.didChangeContentSize?(height)
+            }
         }
         cell.configure(products: prods)
         return cell
