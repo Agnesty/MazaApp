@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ProductPagerTableViewCell: BaseTableViewCell {
     var enableToScroll: Bool = true
@@ -16,6 +18,8 @@ class ProductPagerTableViewCell: BaseTableViewCell {
     private var productsDict: [Int: [Product]] = [:]
     private var collectionView: UICollectionView!
     private var isUpdatingHeight = false
+    private let disposeBag = DisposeBag()
+    internal var didChangeContentSize: ((CGFloat) -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -45,7 +49,7 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(800)
+            make.height.equalTo(1)
         }
     }
     
@@ -53,7 +57,6 @@ class ProductPagerTableViewCell: BaseTableViewCell {
         self.categories = categories
         self.productsDict = productsDict
         collectionView.reloadData()
-        collectionView.layoutIfNeeded()
     }
     
     func scrollToPage(index: Int) {
@@ -79,18 +82,12 @@ extension ProductPagerTableViewCell: UICollectionViewDataSource, UICollectionVie
             self?.didSelectProduct?(product)
         }
         cell.isCollectionViewCellScrollEnabled(enableToScroll)
-        cell.didUpdateHeight = { [weak self] height in
+        cell.didChangeContentSize = { [weak self] height in
             guard let self = self else { return }
             self.collectionView.snp.updateConstraints { $0.height.equalTo(height) }
-            self.collectionView.layoutIfNeeded()
-            self.setNeedsLayout()
-            self.layoutIfNeeded()
-
-            if let tableView = self.superview as? UITableView {
-                UIView.performWithoutAnimation {
-                    tableView.beginUpdates()
-                    tableView.endUpdates()
-                }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.didChangeContentSize?(height)
             }
         }
         cell.configure(products: prods)

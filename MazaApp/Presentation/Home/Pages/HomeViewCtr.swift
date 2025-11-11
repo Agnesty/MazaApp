@@ -118,12 +118,8 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupUI()
-        bindViewModel()
         setupRefreshControl()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
-            self?.tableView.reloadData()
-        }
+        bindViewModel()
     }
     
     private func setupUI() {
@@ -225,17 +221,18 @@ class HomeViewCtr: BaseViewController, UITextFieldDelegate {
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] homeData in
-                guard let self = self else { return }
-                self.tabHomeStickyHeader.configureTabs(homeData.tabsHomeMenu)
-                self.tabHomeStickyHeader.didSelectTab = { [weak self] index in
+                self?.tableView.reloadData()
+                self?.tabHomeStickyHeader.configureTabs(homeData.tabsHomeMenu)
+                self?.tabHomeStickyHeader.didSelectTab = { [weak self] index in
                     if let pagerCell = self?.tableView.cellForRow(
                            at: IndexPath(row: 0, section: SectionHome.recommendationProduct.rawValue)
                        ) as? ProductPagerTableViewCell {
                            pagerCell.scrollToPage(index: index)
                     }
+                    self?.tableView.beginUpdates()
+                    self?.tableView.endUpdates()
                 }
-                self.tableView.reloadData()
-                self.refreshControl.endRefreshing()
+                self?.refreshControl.endRefreshing()
             })
             .disposed(by: disposeBag)
         
@@ -359,6 +356,13 @@ extension HomeViewCtr: UITableViewDataSource, UITableViewDelegate {
                    cell.configure(categories: tabs, productsDict: productsDict)
                    cell.didScrollToPage = { [weak self] index in
                        self?.tabHomeStickyHeader.setSelectedTab(index)
+                   }
+                   cell.didChangeContentSize = { [weak self] in
+                    guard let self = self else { return }
+                       tableView.invalidateIntrinsicContentSize()
+                       tableView.contentSize = CGSizeMake(self.view.bounds.width, $0)
+                       tableView.beginUpdates()
+                       tableView.endUpdates()
                    }
                    cell.didSelectProduct = { [weak self] product in
                        let detailVC = ProductDetailViewCtr()

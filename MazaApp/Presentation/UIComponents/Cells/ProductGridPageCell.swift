@@ -7,20 +7,25 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ProductGridPageCell: BaseCollectionViewCell {
     
     var didSelectProduct: ((Product) -> Void)?
-    var didUpdateHeight: ((CGFloat) -> Void)?
     private var products: [Product] = []
     private var collectionView: UICollectionView!
     private var heightCache: [Int: CGFloat] = [:]
     private lazy var sizingCell = ListProductCollectionViewCell()
+    private let disposeBag = DisposeBag()
+    internal var didChangeContentSize: ((CGFloat) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        observeContentSizeChanges()
     }
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupUI()
@@ -41,7 +46,25 @@ class ProductGridPageCell: BaseCollectionViewCell {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(ListProductCollectionViewCell.self, forCellWithReuseIdentifier: ListProductCollectionViewCell.identifier)
         contentView.addSubview(collectionView)
-        collectionView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        collectionView.snp.makeConstraints {
+            $0.width.equalToSuperview()
+            $0.height.equalTo(1)
+        }
+    }
+    
+    internal func observeContentSizeChanges() {
+        collectionView.rx.observe(\.contentSize)
+            .observe(on: MainScheduler.instance)
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] size in
+                guard let self = self else { return }
+                debugPrint("ProductGridPageCell CollectionSize", size)
+                self.collectionView.snp.updateConstraints {
+                    $0.height.equalTo(size.height)
+                }
+                self.didChangeContentSize?(size.height)
+            })
+            .disposed(by: disposeBag)
     }
     
     func isCollectionViewCellScrollEnabled(_ enabled: Bool = true) {
@@ -52,14 +75,6 @@ class ProductGridPageCell: BaseCollectionViewCell {
         self.products = products
         heightCache.removeAll()
         collectionView.reloadData()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-            guard let self = self else { return }
-            self.collectionView.layoutIfNeeded()
-            
-            let newHeight = self.collectionView.contentSize.height
-            if newHeight > 100 { self.didUpdateHeight?(newHeight)}
-        }
     }
 }
 
